@@ -6,277 +6,152 @@ title: latent token
 
 ## 1. latent token 是什么
 
-在 ACT 中，latent token 不是图像 token，也不是机器人状态 token。
-它表示的是：
+在 RoboTwin 这份 ACT 实现里，latent token 是：
 
-> 当前这条动作序列所对应的“动作模式条件”
+> 由潜变量 `z` 投影得到的一个条件 token，用来告诉主 transformer“这次动作应当采用哪一种轨迹模式”。
 
-更具体地说，latent token 是由一个潜变量 `z` 经过线性投影得到的 transformer token。
-这个 token 会与 proprio token 和 image tokens 一起进入主 encoder。
+它不是图像 token，也不是机器人状态 token，更不是直接动作输出。
 
-因此，latent token 的作用不是直接输出动作，而是：
+它的位置是在主 encoder 输入序列最前面，和 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]、[[RoboTwin/ACT/concepts/image-tokens|image tokens]] 一起参与融合。
 
-> 为主 transformer 提供一个额外的条件，用来区分不同的合理动作模式。
+---
 
-## 2. 为什么需要 latent token
+## 2. 在这份实现里它从哪里来
 
-ACT 处理的是动作序列预测问题。
-在很多机器人任务中，同样的观测下，往往不只有一种正确动作。
+### 训练时
 
-例如：
-
-- 抓取一个物体时，可以略微从左靠近
-- 也可以略微从右靠近
-- 两种轨迹都可能成功
-
-如果模型只有“观测 → 动作”这一条确定性映射，那么它容易把这些不同模式平均起来，得到一个折中的动作结果。
-这种“平均动作”反而可能是不好的。
-
-因此，ACT 引入 latent token 的目的就是：
-
-> 用一个低维潜变量来表示“这次要走哪一种动作模式”。
-
-这样，主 transformer 在生成动作时，就不是只依赖图像和状态，而是依赖：
-
-- 图像
-- 当前机器人状态
-- latent 所表示的动作模式条件
-
-## 3. latent token 从哪里来
-
-latent token 并不是直接从图像产生的。
-它来自 CVAE encoder。
-
-训练时，CVAE encoder 的输入主要包括：
-
-- 当前状态 `qpos`
-- 真实动作序列 `actions`
-
-编码过程可以概括为：
-
-1. 把 `actions` 投影为 action embeddings
-2. 把 `qpos` 投影为一个状态 token
-3. 在序列最前面加入一个 `CLS token`
-4. 把整个序列送入 encoder
-5. 取 `CLS token` 输出作为全局摘要
-6. 经过线性层映射为 `mu` 和 `logvar`
-7. 采样得到潜变量 `z`
-8. 再把 `z` 投影成 latent token
-
-因此，latent token 的真正来源是：
-
-> `qpos + actions` 经过 latent encoder 后得到的潜变量表示
-
-## 4. latent token 的生成过程
-
-下面按步骤详细写一次。
-
-### 4.1 构造输入序列
-
-训练时会构造如下序列：
+训练时 latent token 来自 posterior encoder：
 
 ```text
-[CLS, qpos, a_1, a_2, ..., a_T]
+qpos + actions -> latent encoder -> mu, logvar -> sample z -> latent_out_proj -> latent token
 ```
 
-其中：
+具体文件在：
 
-- `CLS`：全局摘要 token
-- `qpos`：当前机器人状态 token
-- `a_t`：第 `t` 个动作位置对应的 token
+- `policy/ACT/detr/models/detr_vae.py`
 
-这里的动作序列并不是直接拿原始数值进 transformer，而是先投影到 hidden dimension。
+这里有两个非常值得记住的实现细节：
 
-### 4.2 encoder 聚合全局信息
+1. posterior encoder 的输入只有 `qpos + actions`，**不含图像**
+2. 这份实现里 `latent_dim = 32`
 
-这个序列经过 latent encoder 后，每个 token 都会与其他 token 发生 self-attention。
-最终，`CLS token` 会变成对整条序列的全局摘要。
+也就是说，训练时 latent token 代表的是：
 
-可以理解为：
+> 当前状态下，这条真实专家动作序列对应的动作模式摘要。
 
-> `CLS token` 读完了当前状态和整条动作序列，并把它们压缩成一个摘要表示
+### 推理时
 
-### 4.3 得到 `mu` 和 `logvar`
+推理时没有真实未来动作，因此不再构造 posterior。
+代码直接使用：
 
-接下来，对 `CLS token` 输出做线性映射，得到：
+```python
+latent_sample = torch.zeros([bs, self.latent_dim], dtype=torch.float32).to(qpos.device)
+latent_input = self.latent_out_proj(latent_sample)
+```
 
-- `mu`
-- `logvar`
+所以推理时不是随机采样，也不是从别的网络预测 prior，而是直接：
 
-它们共同定义了一个高斯分布：
+> 令 `z = 0`，再投影成 latent token。
 
-\[
-q(z|x,a) = \mathcal{N}(\mu, \sigma^2)
-\]
+---
 
-其中：
+## 3. 为什么训练时要有 latent token
 
-\[
-\sigma = \exp(0.5 \cdot \text{logvar})
-\]
+因为 ACT 要解决的不是“当前观测只对应唯一一个未来动作序列”。
 
-### 4.4 重参数化采样得到 `z`
+在很多机器人任务里，同样的观测下，存在多种都能成功的动作模式，例如：
 
-训练时并不是直接用 `mu` 作为 latent，而是通过重参数化技巧采样：
+- 从左侧靠近
+- 从右侧靠近
+- 抓取前先略微调整姿态
 
-\[
-z = \mu + \sigma \odot \epsilon,\quad \epsilon \sim \mathcal{N}(0, I)
-\]
+如果模型只学一个确定性映射，很容易把这些模式平均掉，得到一个折中但不可靠的动作。
 
-这样做的好处是：
+所以 latent token 的作用是：
 
-- 允许随机采样
-- 又能保持反向传播可行
+> 给主 transformer 一个额外条件，告诉它“这次该走哪一类动作模式”。
 
-### 4.5 把 `z` 投影成 latent token
+---
 
-采样得到的 `z` 还是一个潜变量向量，并不是 transformer token。
-因此还要经过一个投影层，把它映射到 hidden dimension：
+## 4. 它在主 transformer 中是怎么用的
 
-\[
-\text{latent\_input} = W z + b
-\]
+在 `transformer.py` 中，图像特征 flatten 后，会把：
 
-这个 `latent_input` 才是后面进入主 transformer 的 latent token。
+- `latent_input`
+- `proprio_input`
 
-## 5. latent token 在主 transformer 中怎么用
+stack 成两个额外 token：
 
-得到 latent token 后，它不会单独拿去预测动作，而是作为 encoder 输入序列中的一个特殊 token。
+```python
+addition_input = torch.stack([latent_input, proprio_input], axis=0)
+src = torch.cat([addition_input, src], axis=0)
+```
 
-主 encoder 输入通常是：
+因此主 encoder 实际看到的序列是：
 
 ```text
-[latent, proprio, img_1, img_2, ..., img_HW]
+[latent, proprio, image tokens...]
 ```
 
-也就是说，latent token 与：
+这说明 latent token 的作用不是最后再拼接给动作头，而是：
 
-- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
-- [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
+> 从 encoder 融合阶段开始，就参与整段条件序列的 self-attention。
 
-一起进入主 encoder。
+所以：
 
-其作用是：
+- 图像 token 可以读取 latent 条件
+- proprio token 也可以读取 latent 条件
+- 最终 encoder 输出的 [[RoboTwin/ACT/concepts/memory|memory]] 会带着 latent 影响
 
-> 让后续所有 token 在 self-attention 中都能访问到“当前动作模式条件”
+---
 
-这样，图像 token 和状态 token 不再只是根据环境和姿态编码，而是能够在编码阶段就知道：
+## 5. 为什么推理时 `z=0` 还能工作
 
-> 当前动作应该偏向哪一种行为模式
-
-## 6. latent token 在训练时和推理时的区别
-
-这是 ACT 中非常关键的一点。
-
-### 6.1 训练时
-训练时有真实未来动作 `actions`，所以可以通过：
-
-- `qpos`
-- `actions`
-
-构造 posterior，再采样得到 `z`，最后得到 latent token。
-
-因此训练时的 latent token 是：
-
-> 从真实动作序列中推断出来的 posterior 条件
-
-### 6.2 推理时
-推理时没有真实未来动作，因此不能再通过 posterior encoder 得到 `z`。
-
-这时通常直接令：
+因为训练时外层 policy 会加入 KL：
 
 \[
-z = 0
+D_{KL}(q(z|qpos, actions) \parallel \mathcal{N}(0, I))
 \]
 
-也就是使用标准高斯 prior 的中心点，再把它投影成 latent token。
+这会强迫 posterior 不要离标准高斯太远。
 
-因此推理时的 latent token 是：
+于是推理时虽然没有真实动作去构造 posterior，
+但直接使用 prior 的中心点 `z=0`，通常仍能落在合理 latent 区域中。
 
-> 默认 prior 点投影得到的条件 token
+所以应该这样记：
 
-## 7. 为什么推理时 `z=0` 还能工作
+> 训练时通过 KL 把 latent 空间约束成“以 0 为中心、结构较规整”的空间，因此推理时直接用 `z=0` 才可行。
 
-表面上看，训练时 latent token 来源于真实动作，而推理时却直接用 `z=0`，似乎会不一致。
-但这里有 KL 正则项在起作用。
+---
 
-训练时，模型不仅要最小化动作重建误差，还要最小化 posterior 与标准高斯之间的 KL 距离：
+## 6. 最容易混淆的几个点
 
-\[
-D_{KL}(q(z|x,a)\,\|\,\mathcal{N}(0,I))
-\]
+### 6.1 latent token 不是图像提出来的
 
-这意味着：
+图像来自 backbone；latent token 来自 posterior 分支。
+这两条路径是分开的。
 
-- posterior 不能离标准高斯太远
-- latent 空间会被约束到一个较规则的区域
+### 6.2 latent token 不是 decoder query
 
-因此，推理时取标准高斯中心点 `z=0`，通常仍然能对应到一个合理、稳定的动作模式。
+latent token 属于 **encoder 输入条件**；
+[[RoboTwin/ACT/concepts/query-embeddings|query embeddings]] 属于 **decoder 输出槽位**。
 
-所以更准确地说：
+### 6.3 latent token 不是“动作本身”
 
-> 不是任意 z 都无所谓，而是训练时通过 KL 约束，使得推理时使用默认 prior 点也能工作。
+它只是动作模式条件，不直接等于某一步动作值。
 
-## 8. latent token 在整体数据流中的位置
+---
 
-在 ACT 的整体前向中，latent token 的位置大致如下：
+## 7. 复习时最应该立刻反应出来的点
 
-1. 输入 `qpos` 和 `actions`（训练时）
-2. latent encoder 输出 `mu` 和 `logvar`
-3. 采样得到 `z`
-4. 投影得到 latent token
-5. latent token 与 proprio token、image tokens 一起进入主 encoder
-6. encoder 输出 memory
-7. decoder 用 query 从 memory 中提取动作信息
-8. 最终输出动作 chunk
+1. 这份实现里 `latent_dim = 32`
+2. posterior encoder 输入是 `qpos + actions`，不看图像
+3. 训练时 `mu/logvar -> sample z -> latent_out_proj -> latent token`
+4. 推理时直接 `z=0`
+5. latent token 会和 proprio、image tokens 一起进入主 encoder
 
-因此，latent token 不是最终目标，而是整个动作生成过程中的条件桥梁。
+---
 
-详见 [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]]。
+## 8. 一句话总结
 
-## 9. latent token 的核心作用总结
-
-我认为 latent token 的作用可以总结为三点：
-
-### 9.1 表示动作模式
-它不是环境信息，也不是当前姿态，而是“这条动作轨迹是什么风格/模式”。
-
-### 9.2 避免平均动作
-在多模态动作分布下，latent token 帮助模型区分不同合理动作，而不是把它们平均掉。
-
-### 9.3 条件化主 transformer
-它作为一个特殊 token 进入主 encoder，使后续动作预测从一开始就带有动作模式条件。
-
-## 10. 容易混淆的点
-
-### 10.1 latent token 不是 image token
-它不是来自图像 backbone，而是来自 CVAE encoder。
-
-### 10.2 latent token 不是直接的动作输出
-它只是条件变量，不是最终动作。
-
-### 10.3 latent token 和 `z` 不是同一个东西
-- `z`：潜变量向量
-- latent token：`z` 经过投影后，适合进入 transformer 的 token 表示
-
-### 10.4 推理时 latent token 仍然存在
-只是它不再来自 posterior，而是来自默认 prior 点。
-
-## 11. 复习时最应该记住的点
-
-1. latent token 来源于 `qpos + actions` 的 CVAE 编码结果
-2. `CLS token` 输出经线性层得到 `mu` 和 `logvar`
-3. 采样得到 `z` 后，还要再投影成 latent token
-4. latent token 会进入主 encoder，而不是直接输出动作
-5. 推理时没有真实动作，因此通常使用 `z=0`
-6. KL 项保证推理时默认 prior 点仍然可用
-
-## 12. 相关笔记跳转
-
-- [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]]
-- [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流转]]
-- [[RoboTwin/ACT/detr_vae|DETRVAE]]
-- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
-- [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
-- [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]
-- [[RoboTwin/ACT/concepts/memory|memory]]
+> 在 RoboTwin 的 ACT 里，latent token 是由潜变量 `z` 投影得到的条件 token：训练时它来自 `qpos + actions` 构造的 posterior，推理时则直接由 `z=0` 得到，用来告诉主 transformer这次动作应当遵循哪种轨迹模式。
