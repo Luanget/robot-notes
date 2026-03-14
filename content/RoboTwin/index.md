@@ -8,4 +8,4 @@ title: RoboTwin
 
 ## 目录
 
-- [ACT](./ACT/)
+- [ACT](ACT/index.md)

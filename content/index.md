@@ -8,4 +8,4 @@ title: 我的学习笔记
 
 ## 当前目录
 
-- [RoboTwin](./RoboTwin/)
+- [RoboTwin](RoboTwin/index.md)
