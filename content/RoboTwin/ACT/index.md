@@ -8,7 +8,7 @@ title: ACT 学习笔记
 
 ## 目录
 
-- [Transformer 数据流转](transformer-dataflow.md)
-- [DETR_VAE 结构](detr_vae.md)
+- [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流转]]
+- [[RoboTwin/ACT/detr_vae|DETR_VAE 结构]]
 - [ACT Policy 结构](act_policy.md)
-- [训练与推理流程](train-and-infer.md)
+- [[RoboTwin/ACT/train-and-infer|训练与推理流程]]

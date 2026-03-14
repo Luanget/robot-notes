@@ -151,8 +151,8 @@ z = \mu + \sigma \odot \epsilon,\quad \epsilon \sim \mathcal{N}(0, I)
 
 也就是说，latent token 与：
 
-- [proprio token](proprio-token.md)
-- [image tokens](image-tokens.md)
+- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
+- [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
 
 一起进入主 encoder。
 
@@ -232,7 +232,7 @@ D_{KL}(q(z|x,a)\,\|\,\mathcal{N}(0,I))
 
 因此，latent token 不是最终目标，而是整个动作生成过程中的条件桥梁。
 
-详见 [ACT 整体数据流](../act-overall-dataflow.md)。
+详见 [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]]。
 
 ## 9. latent token 的核心作用总结
 
@@ -273,10 +273,10 @@ D_{KL}(q(z|x,a)\,\|\,\mathcal{N}(0,I))
 
 ## 12. 相关笔记跳转
 
-- [ACT 整体数据流](../act-overall-dataflow.md)
-- [Transformer 数据流转](../transformer-dataflow.md)
-- [DETRVAE](../detr_vae.md)
-- [proprio token](proprio-token.md)
-- [image tokens](image-tokens.md)
-- [query embeddings](query-embeddings.md)
-- [memory](memory.md)
+- [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]]
+- [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流转]]
+- [[RoboTwin/ACT/detr_vae|DETRVAE]]
+- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
+- [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
+- [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]
+- [[RoboTwin/ACT/concepts/memory|memory]]

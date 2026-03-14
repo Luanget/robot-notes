@@ -33,24 +33,24 @@ ACT 可以粗略分成以下几部分：
    - 训练时，`qpos + actions` 进入 CVAE encoder
    - 输出 `mu`、`logvar`
    - 采样得到 `z`
-   - 经过投影得到 [latent token](concepts/latent-token.md)
+   - 经过投影得到 [[RoboTwin/ACT/concepts/latent-token|latent token]]
 
 3. 视觉路径
    - 图像进入 backbone
-   - 变成 [image tokens](concepts/image-tokens.md)
+   - 变成 [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
 
 4. 本体状态路径
    - `qpos` 经过线性层投影
-   - 变成 [proprio token](concepts/proprio-token.md)
+   - 变成 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
 
 5. 主 transformer
    - encoder 输入由 latent token、proprio token、image tokens 共同组成
-   - encoder 输出 [memory](concepts/memory.md)
-   - decoder 使用 [query embeddings](concepts/query-embeddings.md) 从 memory 中提取动作信息
+   - encoder 输出 [[RoboTwin/ACT/concepts/memory|memory]]
+   - decoder 使用 [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]] 从 memory 中提取动作信息
 
 6. 输出头
    - decoder 输出隐藏表示 `hs`
-   - 经过 [action head](concepts/action-head.md) 输出动作 chunk
+   - 经过 [[RoboTwin/ACT/concepts/action-head|action head]] 输出动作 chunk
    - 还可以经过 `is_pad_head` 输出 padding 预测
 
 7. 损失
@@ -112,13 +112,13 @@ ACT 一次前向中，核心输入包括：
 z = \mu + \sigma \odot \epsilon
 \]
 
-再经过线性投影，得到 [latent token](concepts/latent-token.md)。
+再经过线性投影，得到 [[RoboTwin/ACT/concepts/latent-token|latent token]]。
 
 这一步的作用是：
 
 > 把当前这条专家动作序列的“动作模式”压缩成一个潜变量条件。
 
-详见 [latent token](concepts/latent-token.md) 和 [DETRVAE](detr_vae.md)。
+详见 [[RoboTwin/ACT/concepts/latent-token|latent token]] 和 [[RoboTwin/ACT/detr_vae|DETRVAE]]。
 
 ### 4.2 第二步：提取图像特征
 
@@ -127,20 +127,20 @@ z = \mu + \sigma \odot \epsilon
 
 如果有多路相机，那么多路相机特征会按实现方式拼接后一起送入主 transformer。
 
-这一部分最终形成 [image tokens](concepts/image-tokens.md)。
+这一部分最终形成 [[RoboTwin/ACT/concepts/image-tokens|image tokens]]。
 
 ### 4.3 第三步：构造 proprio token
 
 当前机器人状态 `qpos` 经过线性层投影后，得到一个固定维度向量。
-这个向量被当成一个独立 token，称为 [proprio token](concepts/proprio-token.md)。
+这个向量被当成一个独立 token，称为 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]。
 
 ### 4.4 第四步：送入主 encoder
 
 主 transformer 的 encoder 输入并不只是图像，而是一个联合 token 序列：
 
-- [latent token](concepts/latent-token.md)
-- [proprio token](concepts/proprio-token.md)
-- [image tokens](concepts/image-tokens.md)
+- [[RoboTwin/ACT/concepts/latent-token|latent token]]
+- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
+- [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
 
 可以写成：
 
@@ -158,15 +158,15 @@ z = \mu + \sigma \odot \epsilon
 - proprio token 可以感知全局视觉信息
 - latent token 也可以与图像、状态交互
 
-经过多层 self-attention 后，encoder 输出 [memory](concepts/memory.md)。
+经过多层 self-attention 后，encoder 输出 [[RoboTwin/ACT/concepts/memory|memory]]。
 
 ### 4.5 第五步：decoder 用 query 提取动作信息
 
 主 decoder 的输入不是“前一个动作”，而是：
 
 - 全零初始化的 `tgt`
-- [query embeddings](concepts/query-embeddings.md)
-- encoder 输出的 [memory](concepts/memory.md)
+- [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]
+- encoder 输出的 [[RoboTwin/ACT/concepts/memory|memory]]
 
 这里每个 query 都对应未来动作序列中的一个位置，也就是一个“动作槽位”。
 
@@ -187,7 +187,7 @@ decoder 主要做三件事：
 
 ### 4.6 第六步：输出动作 chunk
 
-decoder 输出 `hs` 后，经过 [action head](concepts/action-head.md) 投影到动作空间：
+decoder 输出 `hs` 后，经过 [[RoboTwin/ACT/concepts/action-head|action head]] 投影到动作空间：
 
 \[
 \hat{a} = \text{action\_head}(hs)
@@ -243,7 +243,7 @@ L = L_{action} + \lambda L_{KL}
 z = 0
 \]
 
-再把它投影成 [latent token](concepts/latent-token.md)。
+再把它投影成 [[RoboTwin/ACT/concepts/latent-token|latent token]]。
 
 这意味着：
 
@@ -268,23 +268,23 @@ z = 0
 
 ## 6. ACT 的关键中间概念
 
-### 6.1 [latent token](concepts/latent-token.md)
+### 6.1 [[RoboTwin/ACT/concepts/latent-token|latent token]]
 由训练阶段的动作序列和当前状态编码而来，用于表示动作模式条件。
 推理时则由默认 prior 点投影得到。
 
-### 6.2 [proprio token](concepts/proprio-token.md)
+### 6.2 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
 由 `qpos` 投影而来，表示当前机器人状态。
 
-### 6.3 [image tokens](concepts/image-tokens.md)
+### 6.3 [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
 由图像 backbone 特征图整理而来，表示环境观察信息。
 
-### 6.4 [query embeddings](concepts/query-embeddings.md)
+### 6.4 [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]
 decoder 中的 learned queries，每个 query 对应未来动作序列中的一个位置。
 
-### 6.5 [memory](concepts/memory.md)
+### 6.5 [[RoboTwin/ACT/concepts/memory|memory]]
 encoder 输出的一组上下文化表示，是 decoder 查询动作信息的基础。
 
-### 6.6 [action head](concepts/action-head.md)
+### 6.6 [[RoboTwin/ACT/concepts/action-head|action head]]
 把 decoder 输出的隐藏表示映射到动作空间，得到动作预测。
 
 ## 7. ACT 的核心理解
@@ -322,13 +322,13 @@ decoder 中每个 query 不代表图像区域，而代表未来动作序列中�
 
 ## 9. 相关笔记跳转
 
-- [Transformer 数据流转](transformer-dataflow.md)
-- [DETRVAE](detr_vae.md)
+- [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流转]]
+- [[RoboTwin/ACT/detr_vae|DETRVAE]]
 - [ACT Policy](act_policy.md)
-- [训练与推理流程](train-and-infer.md)
-- [latent token](concepts/latent-token.md)
-- [proprio token](concepts/proprio-token.md)
-- [image tokens](concepts/image-tokens.md)
-- [query embeddings](concepts/query-embeddings.md)
-- [memory](concepts/memory.md)
-- [action head](concepts/action-head.md)
+- [[RoboTwin/ACT/train-and-infer|训练与推理流程]]
+- [[RoboTwin/ACT/concepts/latent-token|latent token]]
+- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
+- [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
+- [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]
+- [[RoboTwin/ACT/concepts/memory|memory]]
+- [[RoboTwin/ACT/concepts/action-head|action head]]
