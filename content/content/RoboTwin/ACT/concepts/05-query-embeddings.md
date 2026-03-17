@@ -67,7 +67,7 @@ ACT 不是一步只预测一个动作，而是一次预测一个 action chunk。
 
 它的 decoder 更像是：
 
-1. encoder 先把输入观测编码成 [[RoboTwin/ACT/concepts/memory|memory]]
+1. encoder 先把输入观测编码成 [[RoboTwin/ACT/concepts/04-memory|memory]]
 2. decoder 再拿 `K` 个 learned queries 去查询这段 memory
 3. 每个 query 负责抽取一个未来动作位置对应的信息
 
@@ -180,7 +180,7 @@ decoder 的 self-attention 发生在 query 槽位之间。
 
 ### 6.2 cross-attention：从 memory 中读取条件信息
 
-decoder 的 cross-attention 则让每个 query 去读 encoder 输出的 [[RoboTwin/ACT/concepts/memory|memory]]。
+decoder 的 cross-attention 则让每个 query 去读 encoder 输出的 [[RoboTwin/ACT/concepts/04-memory|memory]]。
 
 而这份实现里的 memory 不是单个 pooled 向量，而是：
 
@@ -188,9 +188,9 @@ decoder 的 cross-attention 则让每个 query 去读 encoder 输出的 [[RoboTw
 
 这段序列中包含了：
 
-- [[RoboTwin/ACT/concepts/latent-token|latent token]]
-- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
-- [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
+- [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
+- [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]
+- [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]]
 
 所以每个 query 都会从整段 memory 中加权读取自己最需要的信息。
 
@@ -233,7 +233,7 @@ a_hat = self.action_head(hs)
 
 > decoder 输出的每个 query hidden state，几乎就是动作回归前的最后表示。
 
-这也说明这份实现里的 [[RoboTwin/ACT/concepts/action-head|action head]] 很轻，真正的建模主要已经在 transformer 中完成了。
+这也说明这份实现里的 [[RoboTwin/ACT/concepts/06-action-head|action head]] 很轻，真正的建模主要已经在 transformer 中完成了。
 
 ---
 
@@ -241,14 +241,14 @@ a_hat = self.action_head(hs)
 
 把它放回总流程里看：
 
-1. 训练时，`qpos + actions` 进入 latent encoder，得到 [[RoboTwin/ACT/concepts/latent-token|latent token]]
-2. 图像经过 backbone 和 `input_proj` 得到 [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
-3. `qpos` 经过线性层得到 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
+1. 训练时，`qpos + actions` 进入 latent encoder，得到 [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
+2. 图像经过 backbone 和 `input_proj` 得到 [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]]
+3. `qpos` 经过线性层得到 [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]
 4. 这些 token 一起进入主 encoder
-5. encoder 输出整段 [[RoboTwin/ACT/concepts/memory|memory]]
+5. encoder 输出整段 [[RoboTwin/ACT/concepts/04-memory|memory]]
 6. decoder 读入零初始化 `tgt` 和 learned query embeddings
 7. 每个 query 通过 self-attention / cross-attention 变成一个动作槽位表示
-8. 最后通过 [[RoboTwin/ACT/concepts/action-head|action head]] 输出整个动作 chunk
+8. 最后通过 [[RoboTwin/ACT/concepts/06-action-head|action head]] 输出整个动作 chunk
 
 所以 query embeddings 的位置非常明确：
 

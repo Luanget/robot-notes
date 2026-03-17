@@ -18,12 +18,12 @@ title: ACT 代码文件地图
 推荐和下面这些页面配合看：
 
 - [[RoboTwin/ACT/index|ACT 学习入口]]
-- [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]]
-- [[RoboTwin/ACT/train-and-infer|训练与推理流程]]
-- [[RoboTwin/ACT/detr_vae|detr_vae]]
-- [[RoboTwin/ACT/act_policy|act_policy]]
-- [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流转]]
-- [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]]
+- [[RoboTwin/ACT/01-act-overall-dataflow|ACT 整体数据流]]
+- [[RoboTwin/ACT/02-train-and-infer|训练与推理流程]]
+- [[RoboTwin/ACT/04-detr_vae|detr_vae]]
+- [[RoboTwin/ACT/06-act_policy|act_policy]]
+- [[RoboTwin/ACT/05-transformer-dataflow|Transformer 数据流转]]
+- [[RoboTwin/ACT/03-dataset-and-dataloader|Dataset 与 Dataloader 数据流]]
 
 ---
 
@@ -96,7 +96,7 @@ policy/ACT/detr/models/backbone.py
 - 构造 `train_dataset / val_dataset`
 - 构造 `train_dataloader / val_dataloader`
 
-这部分最好和 [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]] 一起看。
+这部分最好和 [[RoboTwin/ACT/03-dataset-and-dataloader|Dataset 与 Dataloader 数据流]] 一起看。
 
 ---
 
@@ -126,7 +126,7 @@ policy/ACT/detr/models/backbone.py
 - 算 `l1 + kl * kl_weight`
 - 推理时不传入 `actions`，直接让模型输出 `a_hat`
 
-这部分最适合配合 [[RoboTwin/ACT/act_policy|act_policy]] 一起看。
+这部分最适合配合 [[RoboTwin/ACT/06-act_policy|act_policy]] 一起看。
 
 ---
 
@@ -211,7 +211,7 @@ policy/ACT/detr/models/backbone.py
 
 所以如果你脑子里只允许留一个“模型总图文件”，那就是它。
 
-这部分最好结合 [[RoboTwin/ACT/detr_vae|detr_vae]] 看。
+这部分最好结合 [[RoboTwin/ACT/04-detr_vae|detr_vae]] 看。
 
 ---
 
@@ -225,7 +225,7 @@ self.query_embed = nn.Embedding(num_queries, hidden_dim)
 
 对应动作槽位的 learned queries。
 
-详见 [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]。
+详见 [[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]]。
 
 ---
 
@@ -237,7 +237,7 @@ self.action_head = nn.Linear(hidden_dim, state_dim)
 
 把 decoder 输出的 hidden states 直接映射到动作维度。
 
-详见 [[RoboTwin/ACT/concepts/action-head|action head]]。
+详见 [[RoboTwin/ACT/concepts/06-action-head|action head]]。
 
 ---
 
@@ -265,7 +265,7 @@ self.is_pad_head = nn.Linear(hidden_dim, 1)
 
 这些模块共同组成训练时的 posterior encoder 路径。
 
-详见 [[RoboTwin/ACT/concepts/latent-token|latent token]]。
+详见 [[RoboTwin/ACT/concepts/01-latent-token|latent token]]。
 
 ---
 
@@ -292,7 +292,7 @@ self.is_pad_head = nn.Linear(hidden_dim, 1)
 - query 和 memory 是怎样做 cross-attention 的
 - decoder 输出 `hs` 到底是什么
 
-这部分最好结合 [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流转]] 一起看。
+这部分最好结合 [[RoboTwin/ACT/05-transformer-dataflow|Transformer 数据流转]] 一起看。
 
 ---
 
@@ -338,7 +338,7 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 - `kl_divergence(mu, logvar)`
 - `loss_dict["loss"] = l1 + kl * kl_weight`
 
-配套笔记：[[RoboTwin/ACT/act_policy|act_policy]]
+配套笔记：[[RoboTwin/ACT/06-act_policy|act_policy]]
 
 ---
 
@@ -355,7 +355,7 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 - 训练时 posterior encoder 分支
 - 推理时 `latent_sample = zeros(...)`
 
-配套笔记：[[RoboTwin/ACT/train-and-infer|训练与推理流程]]
+配套笔记：[[RoboTwin/ACT/02-train-and-infer|训练与推理流程]]
 
 ---
 
@@ -373,7 +373,7 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 - `latent_proj`
 - `latent_out_proj`
 
-配套笔记：[[RoboTwin/ACT/concepts/latent-token|latent token]]
+配套笔记：[[RoboTwin/ACT/concepts/01-latent-token|latent token]]
 
 ---
 
@@ -391,7 +391,7 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 - decoder self-attention / cross-attention
 - `a_hat = self.action_head(hs)`
 
-配套笔记：[[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]
+配套笔记：[[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]]
 
 ---
 
@@ -410,7 +410,7 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 - 多相机 feature 拼接
 - `flatten(2).permute(2,0,1)`
 
-配套笔记：[[RoboTwin/ACT/concepts/image-tokens|image tokens]]
+配套笔记：[[RoboTwin/ACT/concepts/03-image-tokens|image tokens]]
 
 ---
 
@@ -428,7 +428,7 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 - `raw_action = self.all_actions[:, self.t % self.query_frequency]`
 - temporal aggregation 相关逻辑
 
-配套笔记：[[RoboTwin/ACT/train-and-infer|训练与推理流程]]
+配套笔记：[[RoboTwin/ACT/02-train-and-infer|训练与推理流程]]
 
 ---
 
@@ -444,8 +444,8 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 
 先看：
 
-- [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]]
-- [[RoboTwin/ACT/train-and-infer|训练与推理流程]]
+- [[RoboTwin/ACT/01-act-overall-dataflow|ACT 整体数据流]]
+- [[RoboTwin/ACT/02-train-and-infer|训练与推理流程]]
 
 目标：
 
@@ -459,7 +459,7 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 
 再看：
 
-- [[RoboTwin/ACT/detr_vae|detr_vae]]
+- [[RoboTwin/ACT/04-detr_vae|detr_vae]]
 
 目标：
 
@@ -471,7 +471,7 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 
 再看：
 
-- [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流转]]
+- [[RoboTwin/ACT/05-transformer-dataflow|Transformer 数据流转]]
 
 目标：
 
@@ -484,12 +484,12 @@ image -> backbone.py -> feature map + pos -> detr_vae.py -> transformer.py
 
 最后查概念页：
 
-- [[RoboTwin/ACT/concepts/latent-token|latent token]]
-- [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]
-- [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
-- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
-- [[RoboTwin/ACT/concepts/memory|memory]]
-- [[RoboTwin/ACT/concepts/action-head|action head]]
+- [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
+- [[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]]
+- [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]]
+- [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]
+- [[RoboTwin/ACT/concepts/04-memory|memory]]
+- [[RoboTwin/ACT/concepts/06-action-head|action head]]
 
 目标：
 

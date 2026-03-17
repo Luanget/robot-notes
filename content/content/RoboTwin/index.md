@@ -40,8 +40,8 @@ ACT 是 RoboTwin 中一条非常适合深入学习的主线，因为它把下面
 如果你是第一次回到这套笔记，建议从这里进入：
 
 1. [[RoboTwin/ACT/index|ACT 学习笔记入口]]
-2. [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]]
-3. [[RoboTwin/ACT/train-and-infer|训练与推理流程]]
+2. [[RoboTwin/ACT/01-act-overall-dataflow|ACT 整体数据流]]
+3. [[RoboTwin/ACT/02-train-and-infer|训练与推理流程]]
 4. [[RoboTwin/ACT/concepts/index|ACT 关键概念索引]]
 
 这样可以先把主线抓住，再按概念跳转补细节。

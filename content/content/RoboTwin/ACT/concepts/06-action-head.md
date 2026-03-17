@@ -26,11 +26,11 @@ self.action_head = nn.Linear(hidden_dim, state_dim)
 ACT 主线可以粗略拆成：
 
 1. 输入条件构造
-   - [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
-   - [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
-   - [[RoboTwin/ACT/concepts/latent-token|latent token]]
-2. encoder 融合这些条件，形成 [[RoboTwin/ACT/concepts/memory|memory]]
-3. decoder 用 [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]] 从 memory 中抽取每个动作槽位的表示
+   - [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]]
+   - [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]
+   - [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
+2. encoder 融合这些条件，形成 [[RoboTwin/ACT/concepts/04-memory|memory]]
+3. decoder 用 [[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]] 从 memory 中抽取每个动作槽位的表示
 4. action head 把每个槽位表示映射成动作
 
 所以 action head 的位置非常靠后。  
@@ -140,7 +140,7 @@ decoder hidden state -> linear -> predicted action
 
 ### query embeddings 决定“哪个槽位在预测哪一步动作”
 
-见：[[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]
+见：[[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]]
 
 ### action head 决定“这个槽位最后输出成什么动作向量”
 
@@ -201,7 +201,7 @@ l1 = (all_l1 * ~is_pad.unsqueeze(-1)).mean()
 
 > 在有效时间步上，把 decoder 表示尽量准确地回归到目标动作。
 
-更完整见：[[RoboTwin/ACT/act_policy|act_policy]]
+更完整见：[[RoboTwin/ACT/06-act_policy|act_policy]]
 
 ---
 

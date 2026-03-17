@@ -32,32 +32,32 @@ title: Demystifying Action Space Design for Robotic Manipulation Policies
 
 ### 1. 先看整篇论文总览
 
-- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/paper-overview|论文总览]]
+- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/01-paper-overview|论文总览]]
   - 先把整篇论文的研究问题、结构、最终结论抓住。
 
 ### 2. 再看 taxonomy 和核心概念
 
-- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/taxonomy-and-core-ideas|Taxonomy 与核心概念]]
+- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/02-taxonomy-and-core-ideas|Taxonomy 与核心概念]]
   - 这一篇解决：joint / task、absolute / delta、chunk-wise / step-wise 到底分别是什么意思。
 
 ### 3. 再看 RQ1：实现细节
 
-- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/rq1-implementation-nuances|RQ1：实现细节为什么是决定性的]]
+- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/03-rq1-implementation-nuances|RQ1：实现细节为什么是决定性的]]
   - 重点是：chunk-wise 为什么比 step-wise 更合理，horizon 为什么不能单独调。
 
 ### 4. 再看 RQ2 + RQ3：主结果
 
-- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/rq2-rq3-main-results|RQ2 / RQ3：主结果与趋势]]
+- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/04-rq2-rq3-main-results|RQ2 / RQ3：主结果与趋势]]
   - 重点是：delta 为什么整体更强，joint 为什么在标准 setting 下更强，task 为什么在 generalized setting 下反超。
 
 ### 5. 最后补附录与边界
 
-- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/appendices-and-limitations|附录补充、局限与未来方向]]
+- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/05-appendices-and-limitations|附录补充、局限与未来方向]]
   - 这一篇把 Appendix B / D / E / F / G 中真正值得记的内容做收束。
 
 ### 6. 复习时直接看速查页
 
-- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/review-cheatsheet|速查复习页]]
+- [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/06-review-cheatsheet|速查复习页]]
   - 用来快速回忆整篇论文，不需要再从头通读。
 
 ---

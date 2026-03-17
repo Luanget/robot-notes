@@ -13,7 +13,7 @@ title: 训练与推理流程
 3. 为什么训练时会有 posterior，而推理时直接用 `z=0`
 4. 外层 policy 和 rollout 又是怎样使用模型输出的
 
-如果说 [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]] 是总览页，
+如果说 [[RoboTwin/ACT/01-act-overall-dataflow|ACT 整体数据流]] 是总览页，
 那么这篇更像是“训练版前向”和“部署版前向”的对照表。
 
 ---
@@ -32,7 +32,7 @@ title: 训练与推理流程
 - 可以构造 posterior encoder
 - 得到 `mu`、`logvar`
 - 重参数化采样得到 `z`
-- 再投影成 [[RoboTwin/ACT/concepts/latent-token|latent token]]
+- 再投影成 [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
 
 ### 推理时
 
@@ -47,7 +47,7 @@ title: 训练与推理流程
 - proprio 投影一样
 - 主 transformer 一样
 - decoder query 一样
-- [[RoboTwin/ACT/concepts/action-head|action head]] 一样
+- [[RoboTwin/ACT/concepts/06-action-head|action head]] 一样
 
 所以你可以把 ACT 记成：
 
@@ -152,7 +152,7 @@ z = \mu + \sigma \odot \epsilon
 latent_input = self.latent_out_proj(latent_sample)
 ```
 
-这样就得到主 transformer 要用的 [[RoboTwin/ACT/concepts/latent-token|latent token]]。
+这样就得到主 transformer 要用的 [[RoboTwin/ACT/concepts/01-latent-token|latent token]]。
 
 它的作用不是直接输出动作，而是给后面的主网络提供“这条专家轨迹的动作模式条件”。
 
@@ -191,7 +191,7 @@ pos = torch.cat(all_cam_pos, axis=3)
 proprio_input = self.input_proj_robot_state(qpos)
 ```
 
-得到 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]。
+得到 [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]。
 
 这个 token 和 latent token 一样，不是图像 patch，而是额外条件 token。
 
@@ -211,7 +211,7 @@ src = torch.cat([addition_input, src], axis=0)
 ```
 
 4. 再把 `additional_pos_embed` 也拼到位置编码前面
-5. 送入 encoder 得到 [[RoboTwin/ACT/concepts/memory|memory]]
+5. 送入 encoder 得到 [[RoboTwin/ACT/concepts/04-memory|memory]]
 
 所以这份实现里 encoder 真正看到的序列是：
 

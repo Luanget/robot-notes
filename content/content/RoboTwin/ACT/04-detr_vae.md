@@ -90,7 +90,7 @@ self.additional_pos_embed = nn.Embedding(2, hidden_dim)
 
 - 作用：融合 latent token、proprio token、image tokens
 - 训练和推理都要用
-- 输出给 decoder 查询的 [[RoboTwin/ACT/concepts/memory|memory]]
+- 输出给 decoder 查询的 [[RoboTwin/ACT/concepts/04-memory|memory]]
 
 所以一定要把这两个 encoder 分开记。
 
@@ -144,7 +144,7 @@ logvar = latent_info[:, self.latent_dim:]
 latent_input = self.latent_out_proj(latent_sample)
 ```
 
-得到主 transformer 要使用的 [[RoboTwin/ACT/concepts/latent-token|latent token]]。
+得到主 transformer 要使用的 [[RoboTwin/ACT/concepts/01-latent-token|latent token]]。
 
 ---
 
@@ -179,7 +179,7 @@ self.backbones[0]
 ### 5.2 图像特征不会直接输出动作
 
 backbone 只负责提特征，不负责动作回归。
-它提供的是 [[RoboTwin/ACT/concepts/image-tokens|image tokens]] 的原材料。
+它提供的是 [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]] 的原材料。
 
 真正的动作生成仍在后面的主 transformer 中完成。
 
@@ -191,9 +191,9 @@ backbone 只负责提特征，不负责动作回归。
 
 它接收三类条件：
 
-1. [[RoboTwin/ACT/concepts/latent-token|latent token]]
-2. [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
-3. [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
+1. [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
+2. [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]
+3. [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]]
 
 然后分两步工作：
 
@@ -212,7 +212,7 @@ stack 成两个额外 token，prepend 到图像序列前面。
 [latent, proprio, image tokens...]
 ```
 
-然后 encoder 通过 self-attention 完成融合，输出整段 [[RoboTwin/ACT/concepts/memory|memory]]。
+然后 encoder 通过 self-attention 完成融合，输出整段 [[RoboTwin/ACT/concepts/04-memory|memory]]。
 
 ### 6.2 decoder：用 query 解码动作
 
@@ -228,7 +228,7 @@ decoder 端使用：
 
 > 用一组 learned action slots 去 memory 中读取对应未来动作位置的信息。
 
-详细可见：[[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]。
+详细可见：[[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]]。
 
 ---
 
@@ -349,7 +349,7 @@ backbone 负责的是图像特征提取，二者不是一回事。
 
 ### 10.4 `is_pad_head` 虽然存在，但当前训练外层并没有单独给它损失
 
-这点在 [[RoboTwin/ACT/act_policy|act_policy]] 里要一起记住。
+这点在 [[RoboTwin/ACT/06-act_policy|act_policy]] 里要一起记住。
 
 ---
 

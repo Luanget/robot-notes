@@ -164,7 +164,7 @@ self.additional_pos_embed = nn.Embedding(2, hidden_dim)
 - proprio：现在机器人在哪里、姿态是什么
 - latent：这一段动作应该遵循什么潜在模式
 
-见：[[RoboTwin/ACT/concepts/latent-token|latent token]]
+见：[[RoboTwin/ACT/concepts/01-latent-token|latent token]]
 
 ---
 
@@ -192,7 +192,7 @@ self.additional_pos_embed = nn.Embedding(2, hidden_dim)
 - 自身状态：proprio token
 - 高层动作模式：latent token
 
-这三类条件共同进入 encoder，形成 [[RoboTwin/ACT/concepts/memory|memory]]。
+这三类条件共同进入 encoder，形成 [[RoboTwin/ACT/concepts/04-memory|memory]]。
 
 ---
 
@@ -285,9 +285,9 @@ proprio token 自己不会直接变成动作。
 
 1. `qpos` -> proprio token
 2. proprio token 与 latent / image 一起进入 encoder
-3. encoder 输出 [[RoboTwin/ACT/concepts/memory|memory]]
+3. encoder 输出 [[RoboTwin/ACT/concepts/04-memory|memory]]
 4. decoder queries 从 memory 中读取和当前动作槽位相关的信息
-5. 最终经 [[RoboTwin/ACT/concepts/action-head|action head]] 输出动作 chunk
+5. 最终经 [[RoboTwin/ACT/concepts/06-action-head|action head]] 输出动作 chunk
 
 因此，proprio token 对动作的影响是“条件性影响”，不是直接线性映射。
 

@@ -147,12 +147,12 @@ title: 速查复习页
 ## 十、后面如果要继续复习，优先看什么
 
 ### 第一次回忆
-1. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/paper-overview|论文总览]]
-2. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/taxonomy-and-core-ideas|Taxonomy 与核心概念]]
-3. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/rq2-rq3-main-results|主结果与趋势]]
+1. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/01-paper-overview|论文总览]]
+2. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/02-taxonomy-and-core-ideas|Taxonomy 与核心概念]]
+3. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/04-rq2-rq3-main-results|主结果与趋势]]
 
 ### 做展示前
 1. 这页速查
-2. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/rq1-implementation-nuances|RQ1]]
-3. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/rq2-rq3-main-results|RQ2 / RQ3]]
-4. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/appendices-and-limitations|附录与局限]]
+2. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/03-rq1-implementation-nuances|RQ1]]
+3. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/04-rq2-rq3-main-results|RQ2 / RQ3]]
+4. [[Papers/Action-Space-Design/Demystifying-Action-Space-Design-for-Robotic-Manipulation-Policies/05-appendices-and-limitations|附录与局限]]

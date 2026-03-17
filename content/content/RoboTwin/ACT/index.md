@@ -23,28 +23,28 @@ title: ACT
 
 ### 1. 先看整体主线
 
-- [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]]
+- [[RoboTwin/ACT/01-act-overall-dataflow|ACT 整体数据流]]
   - 这一篇解决的问题是：ACT 从输入到输出到底经过哪些模块，latent / backbone / transformer / action head / loss 在整体链路里分别处于什么位置。
 
-- [[RoboTwin/ACT/train-and-infer|训练与推理流程]]
+- [[RoboTwin/ACT/02-train-and-infer|训练与推理流程]]
   - 这一篇解决的问题是：训练和推理到底哪里不同，为什么训练时有 posterior、推理时直接用 `z=0`，以及两条路径哪些共享、哪些分叉。
 
 ---
 
 ### 2. 再补数据入口
 
-- [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]]
+- [[RoboTwin/ACT/03-dataset-and-dataloader|Dataset 与 Dataloader 数据流]]
   - 这一篇解决的问题是：图像、qpos、actions、is_pad 在 `utils.py` 里是怎么被整理成单样本和 batch 的，以及它们如何继续进入 `imitate_episodes.py` 和 `act_policy.py`。
 
 ### 3. 再看模型主体
 
-- [[RoboTwin/ACT/detr_vae|DETR-VAE 主体结构]]
+- [[RoboTwin/ACT/04-detr_vae|DETR-VAE 主体结构]]
   - 这一篇负责把 latent encoder、视觉 backbone、主 transformer、action head 串起来，并明确 CVAE encoder 和主 transformer encoder 不是同一个东西。
 
-- [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流]]
+- [[RoboTwin/ACT/05-transformer-dataflow|Transformer 数据流]]
   - 这一篇重点解释主 transformer 内部的数据是怎么流动的：image tokens、proprio token、latent token 如何进入 encoder，query embeddings 如何在 decoder 中变成动作表示。
 
-- [[RoboTwin/ACT/act_policy|ACT Policy 与损失组织]]
+- [[RoboTwin/ACT/06-act_policy|ACT Policy 与损失组织]]
   - 这一篇负责解释外层 policy 如何调用模型、如何裁切动作 chunk、如何计算 L1 和 KL，以及训练阶段最终 loss 的组织方式。
 
 ---
@@ -56,18 +56,18 @@ title: ACT
 
 重点建议先看：
 
-- [[RoboTwin/ACT/concepts/latent-token|latent token]]
-- [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]
-- [[RoboTwin/ACT/concepts/memory|memory]]
-- [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
-- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
-- [[RoboTwin/ACT/concepts/action-head|action head]]
+- [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
+- [[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]]
+- [[RoboTwin/ACT/concepts/04-memory|memory]]
+- [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]]
+- [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]
+- [[RoboTwin/ACT/concepts/06-action-head|action head]]
 
 ---
 
 ### 5. 最后看源码定位图
 
-- [[RoboTwin/ACT/code-file-map|ACT 代码文件地图]]
+- [[RoboTwin/ACT/07-code-file-map|ACT 代码文件地图]]
   - 当你已经理解整体逻辑，但还经常忘记“某个功能到底在哪个文件里”时，这一篇最有用。
   - 它会帮你快速定位：
     - train / infer 分叉看哪里
@@ -93,8 +93,8 @@ title: ACT
 
 如果你已经学过一次，后面复习时可以直接：
 
-- 先看 [[RoboTwin/ACT/act-overall-dataflow|整体数据流]] 找回主线
-- 再看 [[RoboTwin/ACT/code-file-map|代码文件地图]] 快速定位源码
+- 先看 [[RoboTwin/ACT/01-act-overall-dataflow|整体数据流]] 找回主线
+- 再看 [[RoboTwin/ACT/07-code-file-map|代码文件地图]] 快速定位源码
 - 对某个点模糊时，再跳到对应概念页
 
 ---

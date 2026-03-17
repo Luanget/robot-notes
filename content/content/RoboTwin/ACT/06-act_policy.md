@@ -15,7 +15,7 @@ title: act_policy
 
 也就是说，这篇笔记讲的是“模型壳外面那一层”。
 
-如果你当前更关心的是 `image / qpos / actions / is_pad` 这些量在进入 policy 之前是怎么被构造成 batch 的，建议先看 [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]]。
+如果你当前更关心的是 `image / qpos / actions / is_pad` 这些量在进入 policy 之前是怎么被构造成 batch 的，建议先看 [[RoboTwin/ACT/03-dataset-and-dataloader|Dataset 与 Dataloader 数据流]]。
 
 ---
 
@@ -182,7 +182,7 @@ L1 约束的是：
 
 - 主 transformer encoder
 - decoder
-- [[RoboTwin/ACT/concepts/action-head|action head]]
+- [[RoboTwin/ACT/concepts/06-action-head|action head]]
 - 以及 latent 条件通路
 
 因为整个网络最终都要对动作误差负责。
@@ -348,8 +348,8 @@ raw_action = (actions_for_curr_step * exp_weights).sum(dim=0, keepdim=True)
 
 ### 第一层：模型内部
 
-- [[RoboTwin/ACT/detr_vae|detr_vae]]
-- [[RoboTwin/ACT/transformer-dataflow|transformer-dataflow]]
+- [[RoboTwin/ACT/04-detr_vae|detr_vae]]
+- [[RoboTwin/ACT/05-transformer-dataflow|transformer-dataflow]]
 
 负责：模型怎么前向。
 

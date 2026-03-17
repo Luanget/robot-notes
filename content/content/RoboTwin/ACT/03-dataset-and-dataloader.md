@@ -8,11 +8,11 @@ title: Dataset 与 Dataloader 数据流
 
 前面几篇主线笔记已经把 ACT 的模型主体讲得比较完整了：
 
-- [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]] 讲整体链路
-- [[RoboTwin/ACT/train-and-infer|训练与推理流程]] 讲训练 / 推理分叉
-- [[RoboTwin/ACT/detr_vae|DETR-VAE 主体结构]] 讲模型总装
-- [[RoboTwin/ACT/act_policy|ACT Policy 与损失组织]] 讲外层调用和 loss
-- [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流]] 讲主 transformer 内部
+- [[RoboTwin/ACT/01-act-overall-dataflow|ACT 整体数据流]] 讲整体链路
+- [[RoboTwin/ACT/02-train-and-infer|训练与推理流程]] 讲训练 / 推理分叉
+- [[RoboTwin/ACT/04-detr_vae|DETR-VAE 主体结构]] 讲模型总装
+- [[RoboTwin/ACT/06-act_policy|ACT Policy 与损失组织]] 讲外层调用和 loss
+- [[RoboTwin/ACT/05-transformer-dataflow|Transformer 数据流]] 讲主 transformer 内部
 
 但是如果你要真正把“图像、qpos、actions 是怎么被整理成一个 batch，并送进 ACT”的过程讲清楚，还缺一块专门的笔记。
 
@@ -636,7 +636,7 @@ is_pad[:action_len] = 0
 - 前半段真实动作位置：`False`
 - 后半段补零位置：`True`
 
-这个布尔 mask 后面会在 [[RoboTwin/ACT/act_policy|act_policy]] 里用于屏蔽 padding 部分的动作损失。
+这个布尔 mask 后面会在 [[RoboTwin/ACT/06-act_policy|act_policy]] 里用于屏蔽 padding 部分的动作损失。
 
 ---
 
@@ -1114,7 +1114,7 @@ image = normalize(image)
 - action：取未来动作后缀，再 pad
 - policy：再裁成 `num_queries == chunk_size`
 
-因此，这套数据管线其实和 [[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]]、[[RoboTwin/ACT/train-and-infer|训练与推理流程]] 是强耦合的。
+因此，这套数据管线其实和 [[RoboTwin/ACT/01-act-overall-dataflow|ACT 整体数据流]]、[[RoboTwin/ACT/02-train-and-infer|训练与推理流程]] 是强耦合的。
 
 ---
 
