@@ -23,14 +23,16 @@ title: ACT 代码文件地图
 - [[RoboTwin/ACT/detr_vae|detr_vae]]
 - [[RoboTwin/ACT/act_policy|act_policy]]
 - [[RoboTwin/ACT/transformer-dataflow|Transformer 数据流转]]
+- [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]]
 
 ---
 
 ## 2. ACT 在 RoboTwin 仓库里的主文件分布
 
-你现在最需要记住的核心文件，就是下面这 5 个：
+你现在最需要记住的核心文件，就是下面这 6 个：
 
 ```text
+policy/ACT/utils.py
 policy/ACT/act_policy.py
 policy/ACT/imitate_episodes.py
 policy/ACT/detr/models/detr_vae.py
@@ -40,6 +42,7 @@ policy/ACT/detr/models/backbone.py
 
 如果只从“快速建立文件职责感”出发，可以先这样粗记：
 
+- `utils.py`：dataset、dataloader、归一化统计量、样本构造
 - `act_policy.py`：训练包装层 + 推理封装层
 - `imitate_episodes.py`：训练 / 验证 / rollout 脚本逻辑
 - `detr_vae.py`：ACT 模型主体，负责 latent、视觉、transformer、动作头的总装
@@ -49,6 +52,53 @@ policy/ACT/detr/models/backbone.py
 ---
 
 ## 3. 每个核心文件到底负责什么
+
+
+## 3.0 `policy/ACT/utils.py`
+
+这一块是你理解 dataset / dataloader 时的第一站。
+
+### 它主要负责：
+
+1. 扫描整个数据集，计算 `qpos / action` 的统计量
+2. 求全局 `max_action_len`
+3. 定义 `EpisodicDataset`，构造单样本
+4. 定义 `load_data(...)`，构造 train / val dataloader
+
+### 你最应该关注的对象
+
+#### `get_norm_stats(...)`
+
+它会遍历所有 `episode_i.hdf5`，读出整段 `qpos` 和 `action`，先 pad 到统一长度，再计算：
+
+- `action_mean / action_std`
+- `qpos_mean / qpos_std`
+- `max_action_len`
+
+这一步不是边角料，而是后面 `EpisodicDataset` 能正确归一化样本、以及 DataLoader 能默认 stack 的前提。
+
+#### `EpisodicDataset`
+
+它不是纯图像 dataset，而是联合构造：
+
+- `image_data`
+- `qpos_data`
+- `action_data`
+- `is_pad`
+
+其中图像会从 HDF5 中读取单时刻多相机观测，组装成 `[num_cams, C, H, W]`。
+
+#### `load_data(...)`
+
+它负责：
+
+- train / val 按 episode 划分
+- 构造 `train_dataset / val_dataset`
+- 构造 `train_dataloader / val_dataloader`
+
+这部分最好和 [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]] 一起看。
+
+---
 
 ## 3.1 `policy/ACT/act_policy.py`
 

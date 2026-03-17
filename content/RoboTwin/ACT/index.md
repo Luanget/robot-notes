@@ -11,6 +11,7 @@ title: ACT
 - 模型模块关系
 - 关键概念页
 - 源码文件职责
+- 数据集样本与 dataloader 数据流
 
 组织成一套**适合复习、也适合回查源码**的结构化笔记。
 
@@ -30,7 +31,12 @@ title: ACT
 
 ---
 
-### 2. 再看模型主体
+### 2. 再补数据入口
+
+- [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]]
+  - 这一篇解决的问题是：图像、qpos、actions、is_pad 在 `utils.py` 里是怎么被整理成单样本和 batch 的，以及它们如何继续进入 `imitate_episodes.py` 和 `act_policy.py`。
+
+### 3. 再看模型主体
 
 - [[RoboTwin/ACT/detr_vae|DETR-VAE 主体结构]]
   - 这一篇负责把 latent encoder、视觉 backbone、主 transformer、action head 串起来，并明确 CVAE encoder 和主 transformer encoder 不是同一个东西。
@@ -43,7 +49,7 @@ title: ACT
 
 ---
 
-### 3. 再看关键概念页
+### 4. 再看关键概念页
 
 - [[RoboTwin/ACT/concepts/index|ACT 概念索引]]
   - 概念页适合在你已经看过主线后，用来做快速回忆和局部复习。
@@ -59,7 +65,7 @@ title: ACT
 
 ---
 
-### 4. 最后看源码定位图
+### 5. 最后看源码定位图
 
 - [[RoboTwin/ACT/code-file-map|ACT 代码文件地图]]
   - 当你已经理解整体逻辑，但还经常忘记“某个功能到底在哪个文件里”时，这一篇最有用。
@@ -78,11 +84,12 @@ title: ACT
 
 1. `act-overall-dataflow.md`
 2. `train-and-infer.md`
-3. `detr_vae.md`
-4. `transformer-dataflow.md`
-5. `act_policy.md`
-6. `concepts/` 下的关键概念页
-7. `code-file-map.md`
+3. `dataset-and-dataloader.md`
+4. `detr_vae.md`
+5. `transformer-dataflow.md`
+6. `act_policy.md`
+7. `concepts/` 下的关键概念页
+8. `code-file-map.md`
 
 如果你已经学过一次，后面复习时可以直接：
 
@@ -103,5 +110,4 @@ title: ACT
 
 - imitation / rollout 评估流程
 - temporal aggregation 的细化说明
-- 数据集样本组织与 `qpos / actions / is_pad / image` 的来源
 - RoboTwin 中 ACT 与具体任务配置的关系

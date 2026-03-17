@@ -15,6 +15,8 @@ title: act_policy
 
 也就是说，这篇笔记讲的是“模型壳外面那一层”。
 
+如果你当前更关心的是 `image / qpos / actions / is_pad` 这些量在进入 policy 之前是怎么被构造成 batch 的，建议先看 [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]]。
+
 ---
 
 ## 2. 文件里主要有哪几部分

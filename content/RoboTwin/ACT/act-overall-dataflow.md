@@ -93,6 +93,18 @@ for cam_id, cam_name in enumerate(self.camera_names):
 1. posterior encoder 中作为 action 序列 mask
 2. 外层 L1 计算中屏蔽 padding 位置
 
+### 3.5 这些输入到底从哪里来
+
+如果你已经知道 ACT 的模型主体，但一到 `image / qpos / actions / is_pad` 的来源就容易混乱，那么建议把这一段和 [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]] 对照着看。
+
+那一篇会专门讲清楚：
+
+- `utils.py` 里的 `EpisodicDataset` 如何构造单样本
+- 图像为什么是“单时刻多相机”
+- `actions` 为什么是未来动作后缀
+- `is_pad` 为什么必须和 `max_action_len` 一起出现
+- DataLoader 为什么可以默认 collate 成 batch
+
 ---
 
 ## 4. 训练时的数据流
