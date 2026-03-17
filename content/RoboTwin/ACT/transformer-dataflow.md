@@ -12,7 +12,7 @@ title: ACT 中 Transformer 数据流转
 2. 图像特征、`latent_input`、`proprio_input` 是怎样一起进入 transformer 的
 3. `query_embed`、零初始化 `tgt`、decoder 的 self-attention / cross-attention 各自负责什么
 4. `hs` 是怎样变成动作 chunk 的
-5. 这一页和 [[RoboTwin/ACT/04-detr_vae|detr_vae]]、[[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]]、[[RoboTwin/ACT/concepts/04-memory|memory]] 的关系是什么
+5. 这一页和 [[RoboTwin/ACT/detr_vae|detr_vae]]、[[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]、[[RoboTwin/ACT/concepts/memory|memory]] 的关系是什么
 
 这篇的重点是：
 
@@ -103,7 +103,7 @@ hs = self.transformer(
 
 这点和只看概念图时的直觉不太一样。
 
-详见 [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]]。
+详见 [[RoboTwin/ACT/concepts/image-tokens|image tokens]]。
 
 ---
 
@@ -117,7 +117,7 @@ proprio_input = self.input_proj_robot_state(qpos)
 
 也就是把机器人本体状态线性映射到 `hidden_dim`，作为一个额外条件 token。
 
-详见 [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]。
+详见 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]。
 
 ---
 
@@ -135,7 +135,7 @@ latent_input = self.latent_out_proj(latent_sample)
 
 这个 `latent_input` 也会作为额外 token 加到主 transformer encoder 的输入前面。
 
-详见 [[RoboTwin/ACT/concepts/01-latent-token|latent token]]。
+详见 [[RoboTwin/ACT/concepts/latent-token|latent token]]。
 
 ---
 
@@ -153,7 +153,7 @@ self.query_embed = nn.Embedding(num_queries, hidden_dim)
 
 这组 query 不进入 encoder，而是进入 decoder，作为动作槽位。
 
-详见 [[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]]。
+详见 [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]]。
 
 ---
 
@@ -227,7 +227,7 @@ pos_embed = torch.cat([additional_pos_embed, pos_embed], axis=0)
 - 把它们作为**独立 token**拼在视觉 token 前面
 - 同时给这两个额外 token 配置单独的 `additional_pos_embed`
 
-这也解释了为什么 [[RoboTwin/ACT/concepts/04-memory|memory]] 不是只有视觉信息，而是融合后的整段上下文化序列。
+这也解释了为什么 [[RoboTwin/ACT/concepts/memory|memory]] 不是只有视觉信息，而是融合后的整段上下文化序列。
 
 ---
 
@@ -389,7 +389,7 @@ is_pad_hat = self.is_pad_head(hs)
 - 主要的建模工作已经在 transformer 中完成
 - `action_head` 本身只是一个比较轻的线性映射头
 
-详见 [[RoboTwin/ACT/concepts/06-action-head|action head]]。
+详见 [[RoboTwin/ACT/concepts/action-head|action head]]。
 
 ---
 
@@ -457,7 +457,7 @@ query_embed + zero tgt
   -> a_hat
 ```
 
-这条线和 [[RoboTwin/ACT/02-train-and-infer|训练与推理流程]]、[[RoboTwin/ACT/01-act-overall-dataflow|ACT 整体数据流]] 是一致的。
+这条线和 [[RoboTwin/ACT/train-and-infer|训练与推理流程]]、[[RoboTwin/ACT/act-overall-dataflow|ACT 整体数据流]] 是一致的。
 
 ---
 

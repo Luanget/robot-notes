@@ -31,8 +31,8 @@ image tokens 负责提供外部视觉环境信息，例如：
 
 如果没有 image tokens，ACT 只能依赖：
 
-- [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]：机器人自身状态
-- [[RoboTwin/ACT/concepts/01-latent-token|latent token]]：动作模式条件
+- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]：机器人自身状态
+- [[RoboTwin/ACT/concepts/latent-token|latent token]]：动作模式条件
 
 但就无法知道“当前外部世界长什么样”。
 
@@ -193,8 +193,8 @@ pos = torch.cat(all_cam_pos, axis=3)
 
 进入主 transformer encoder 后，image tokens 不再只是“本地视觉特征”，而会和：
 
-- [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
-- [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]
+- [[RoboTwin/ACT/concepts/latent-token|latent token]]
+- [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
 - 其他 image tokens
 
 一起做 self-attention 融合。
@@ -203,7 +203,7 @@ pos = torch.cat(all_cam_pos, axis=3)
 
 - 图像 token 不再只知道局部外观
 - 还会吸收 robot state 和 latent 条件信息
-- 最终成为 [[RoboTwin/ACT/concepts/04-memory|memory]] 的一部分
+- 最终成为 [[RoboTwin/ACT/concepts/memory|memory]] 的一部分
 
 所以 decoder 后面读到的，不是“原始图像 token”，而是“融合后的视觉相关 memory token”。
 
@@ -219,8 +219,8 @@ decoder 并不会直接输入图像，也不会直接操作 feature map。
 1. 图像 -> image tokens
 2. image tokens 与 latent / proprio 一起进入 encoder
 3. encoder 输出 memory
-4. [[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]] 从 memory 中读取相关视觉信息
-5. 最终经 [[RoboTwin/ACT/concepts/06-action-head|action head]] 输出动作 chunk
+4. [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]] 从 memory 中读取相关视觉信息
+5. 最终经 [[RoboTwin/ACT/concepts/action-head|action head]] 输出动作 chunk
 
 也就是说，image tokens 负责提供“视觉条件”，不是直接输出动作。
 

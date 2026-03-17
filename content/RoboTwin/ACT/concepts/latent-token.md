@@ -12,7 +12,7 @@ title: latent token
 
 它不是图像 token，也不是机器人状态 token，更不是直接动作输出。
 
-它的位置是在主 encoder 输入序列最前面，和 [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]、[[RoboTwin/ACT/concepts/03-image-tokens|image tokens]] 一起参与融合。
+它的位置是在主 encoder 输入序列最前面，和 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]、[[RoboTwin/ACT/concepts/image-tokens|image tokens]] 一起参与融合。
 
 ---
 
@@ -101,7 +101,7 @@ src = torch.cat([addition_input, src], axis=0)
 
 - 图像 token 可以读取 latent 条件
 - proprio token 也可以读取 latent 条件
-- 最终 encoder 输出的 [[RoboTwin/ACT/concepts/04-memory|memory]] 会带着 latent 影响
+- 最终 encoder 输出的 [[RoboTwin/ACT/concepts/memory|memory]] 会带着 latent 影响
 
 ---
 
@@ -134,7 +134,7 @@ D_{KL}(q(z|qpos, actions) \parallel \mathcal{N}(0, I))
 ### 6.2 latent token 不是 decoder query
 
 latent token 属于 **encoder 输入条件**；
-[[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]] 属于 **decoder 输出槽位**。
+[[RoboTwin/ACT/concepts/query-embeddings|query embeddings]] 属于 **decoder 输出槽位**。
 
 ### 6.3 latent token 不是“动作本身”
 

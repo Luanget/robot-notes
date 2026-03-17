@@ -34,25 +34,25 @@ title: ACT 整体数据流
    - 训练时，`qpos + actions` 进入 latent encoder
    - 得到 `mu`、`logvar`
    - 重参数化采样得到 `z`
-   - 投影成 [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
+   - 投影成 [[RoboTwin/ACT/concepts/latent-token|latent token]]
 
 3. 视觉路径
    - 多路图像进入共享 backbone
    - 输出 feature map 和位置编码
-   - 经过 `input_proj` 形成 [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]]
+   - 经过 `input_proj` 形成 [[RoboTwin/ACT/concepts/image-tokens|image tokens]]
 
 4. 本体状态路径
    - `qpos` 经过线性投影
-   - 得到 [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]
+   - 得到 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]
 
 5. 主 transformer
    - encoder 输入由 latent token、proprio token、image tokens 组成
-   - 输出整段 [[RoboTwin/ACT/concepts/04-memory|memory]]
-   - decoder 使用 [[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]] 从 memory 中提取动作信息
+   - 输出整段 [[RoboTwin/ACT/concepts/memory|memory]]
+   - decoder 使用 [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]] 从 memory 中提取动作信息
 
 6. 输出头
    - decoder 输出隐藏表示 `hs`
-   - 经过 [[RoboTwin/ACT/concepts/06-action-head|action head]] 输出动作 chunk
+   - 经过 [[RoboTwin/ACT/concepts/action-head|action head]] 输出动作 chunk
    - 另外还定义了 `is_pad_head`
 
 7. 损失
@@ -78,7 +78,7 @@ for cam_id, cam_name in enumerate(self.camera_names):
 ### 3.2 机器人状态 `qpos`
 
 表示当前机器人本体状态，例如关节角等。
-它一方面会进入 posterior encoder，另一方面也会投影成 [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]] 进入主 encoder。
+它一方面会进入 posterior encoder，另一方面也会投影成 [[RoboTwin/ACT/concepts/proprio-token|proprio token]] 进入主 encoder。
 
 ### 3.3 动作序列 `actions`
 
@@ -95,7 +95,7 @@ for cam_id, cam_name in enumerate(self.camera_names):
 
 ### 3.5 这些输入到底从哪里来
 
-如果你已经知道 ACT 的模型主体，但一到 `image / qpos / actions / is_pad` 的来源就容易混乱，那么建议把这一段和 [[RoboTwin/ACT/03-dataset-and-dataloader|Dataset 与 Dataloader 数据流]] 对照着看。
+如果你已经知道 ACT 的模型主体，但一到 `image / qpos / actions / is_pad` 的来源就容易混乱，那么建议把这一段和 [[RoboTwin/ACT/dataset-and-dataloader|Dataset 与 Dataloader 数据流]] 对照着看。
 
 那一篇会专门讲清楚：
 
@@ -130,7 +130,7 @@ for cam_id, cam_name in enumerate(self.camera_names):
 - 经过 `latent_proj`
 - 切成 `mu` 和 `logvar`
 - 重参数化采样得到 `z`
-- 再投影成 [[RoboTwin/ACT/concepts/01-latent-token|latent token]]
+- 再投影成 [[RoboTwin/ACT/concepts/latent-token|latent token]]
 
 这条路径的作用是：
 
@@ -172,7 +172,7 @@ pos = torch.cat(all_cam_pos, axis=3)
 proprio_input = self.input_proj_robot_state(qpos)
 ```
 
-得到一个 hidden-dim 向量，这就是 [[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]。
+得到一个 hidden-dim 向量，这就是 [[RoboTwin/ACT/concepts/proprio-token|proprio token]]。
 
 ---
 
@@ -195,7 +195,7 @@ proprio_input = self.input_proj_robot_state(qpos)
 
 > 图像、状态、latent 条件不是最后才拼起来，而是一开始就共同参加 encoder self-attention 融合。
 
-encoder 输出的不是一个 pooled 向量，而是整段 [[RoboTwin/ACT/concepts/04-memory|memory]]。
+encoder 输出的不是一个 pooled 向量，而是整段 [[RoboTwin/ACT/concepts/memory|memory]]。
 
 ---
 

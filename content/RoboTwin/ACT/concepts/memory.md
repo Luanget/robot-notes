@@ -11,9 +11,9 @@ title: memory
 但在你这份 RoboTwin 仓库实现里，`memory` 其实非常具体：
 
 > 它就是 **主 transformer encoder 输出的整段 token 序列**，
-> 里面已经融合了 [[RoboTwin/ACT/concepts/01-latent-token|latent token]]、[[RoboTwin/ACT/concepts/02-proprio-token|proprio token]] 和 [[RoboTwin/ACT/concepts/03-image-tokens|image tokens]] 的信息。
+> 里面已经融合了 [[RoboTwin/ACT/concepts/latent-token|latent token]]、[[RoboTwin/ACT/concepts/proprio-token|proprio token]] 和 [[RoboTwin/ACT/concepts/image-tokens|image tokens]] 的信息。
 
-decoder 后续做的事，不是凭空生成动作，而是让 [[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]] 去这段 encoder 输出序列里读信息，最后由 [[RoboTwin/ACT/concepts/06-action-head|action head]] 映射成动作。
+decoder 后续做的事，不是凭空生成动作，而是让 [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]] 去这段 encoder 输出序列里读信息，最后由 [[RoboTwin/ACT/concepts/action-head|action head]] 映射成动作。
 
 所以理解 `memory` 的关键不是把它当成“某个额外模块”，而是明白：
 
@@ -149,7 +149,7 @@ self.input_proj_robot_state = nn.Linear(state_dim, hidden_dim)
 
 它不是 patch，也不是时序序列，而是一个单独的状态 token。
 
-见：[[RoboTwin/ACT/concepts/02-proprio-token|proprio token]]
+见：[[RoboTwin/ACT/concepts/proprio-token|proprio token]]
 
 ---
 
@@ -168,7 +168,7 @@ self.input_proj_robot_state = nn.Linear(state_dim, hidden_dim)
 - 直接用 `zeros([bs, latent_dim])`
 - 再做同样的 `latent_out_proj`
 
-见：[[RoboTwin/ACT/concepts/01-latent-token|latent token]]
+见：[[RoboTwin/ACT/concepts/latent-token|latent token]]
 
 ---
 
@@ -218,7 +218,7 @@ RoboTwin 这份实现里，latent 和 proprio 不是和图像一样从 feature m
 
 ## 7. decoder 是怎样使用 memory 的
 
-这部分必须和 [[RoboTwin/ACT/concepts/05-query-embeddings|query embeddings]] 连起来理解。
+这部分必须和 [[RoboTwin/ACT/concepts/query-embeddings|query embeddings]] 连起来理解。
 
 decoder 一开始有：
 
